@@ -1,8 +1,8 @@
 const express = require('express');
-const { getGeneros } = require('../controllers/generoController');
+const { getGenerosController } = require('../controllers/generoController');
 
 const router = express.Router();
 
-router.get('/get-generos', getGeneros);
+router.get('/get-generos', getGenerosController);
 
 module.exports = router;

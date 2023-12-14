@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const { getUserByUsername, insertUser } = require('../models/userModel');
+const { getUserByUsername, insertUser } = require('../models/authModel');
 
 const jwtSecretKey = crypto.randomBytes(32).toString('hex');
 

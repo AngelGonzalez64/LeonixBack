@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 
 const db = require('./config/db');
 
@@ -18,7 +19,9 @@ const JWT_SECRET_KEY = crypto.randomBytes(32).toString('hex');
 
 // Middleware para verificar y decodificar el token
 function verifyToken(req, res, next) {
-  const token = req.headers['authorization'];
+  const token = req.headers['authorization'].split(' ')[1];
+
+  console.log('Token recibido:', token);
 
   if (!token) {
     return res.status(403).json({ error: 'Token no proporcionado' });
@@ -52,7 +55,7 @@ app.post('/login', async (req, res) => {
 
     const results = await queryAsync('SELECT * FROM usuarios WHERE username = ?', [username]);
 
-    if (results.length === 0 || results[0].password !== password) {
+    if (results.length === 0 || !await bcrypt.compare(password, results[0].password)) {
       return res.status(401).json({ error: 'Credenciales incorrectas' });
     }
 
@@ -81,6 +84,10 @@ app.post('/signup', async (req, res) => {
 
     usuario.genero_id = generoResults[0].id;
 
+    // Hash de la contraseña antes de almacenarla en la base de datos
+    const hashedPassword = await bcrypt.hash(usuario.password, 10);
+    usuario.password = hashedPassword;
+
     const results = await queryAsync('INSERT INTO usuarios SET ?', usuario);
 
     console.log('Usuario registrado con éxito');
@@ -99,6 +106,30 @@ app.get('/get-generos', async (req, res) => {
   } catch (err) {
     console.error('Error al obtener la lista de géneros:', err);
     res.status(500).json({ error: 'Error al obtener la lista de géneros' });
+  }
+});
+
+// Ruta para obtener la información del usuario a partir del token
+app.get('/get-user-info', verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.username; // Supongo que el nombre de usuario se usa como identificador único en este caso
+
+    // Consulta para obtener la información del usuario
+    const userInfoQuery = 'SELECT * FROM usuarios WHERE username = ?';
+    const userInfoResults = await queryAsync(userInfoQuery, [userId]);
+
+    if (userInfoResults.length === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    const userInfo = userInfoResults[0];
+    // Puedes excluir la contraseña u otros datos sensibles antes de enviar la respuesta
+    delete userInfo.password;
+
+    res.status(200).json(userInfo);
+  } catch (err) {
+    console.error('Error al obtener la información del usuario:', err);
+    res.status(500).json({ error: 'Error al obtener la información del usuario' });
   }
 });
 

@@ -1,6 +1,6 @@
-const { getGeneros } = require('../models/userModel');
+const { getGeneros } = require('../models/generoModel');
 
-async function getGeneros(req, res) {
+async function getGenerosController(req, res) {
   try {
     const results = await getGeneros();
     res.status(200).json(results);
@@ -11,5 +11,5 @@ async function getGeneros(req, res) {
 }
 
 module.exports = {
-  getGeneros
+  getGenerosController
 };
