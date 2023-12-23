@@ -1,23 +1,28 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const authRoutes = require('./routes/authRoutes');
-const generoRoutes = require('./routes/generoRoutes');
-const userRoutes = require('./routes/userRoutes');
+const authController = require('./controllers/authController');
+const userController = require('./controllers/userController');
 
 const app = express();
-const port = 5000;
+const PORT = 5000;
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '100mb', extended: true }));
 
-// Rutas
-app.use('/', authRoutes);
-app.use('/', generoRoutes);
-app.use('/', userRoutes);
+// RUTAS
+// Auth
+app.post('/login', authController.login);
+app.post('/signup', authController.signup);
+
+// User
+app.get('/get-generos', userController.getGeneros);
+app.get('/get-user-info', authController.verifyToken, userController.getUserInfo);
+app.post('/upload-image', authController.verifyToken, userController.uploadImage);
+app.get('/get-user-image', authController.verifyToken, userController.getUserImage);
 
 // Inicia el servidor
-app.listen(port, () => {
-  console.log(`Servidor en ejecución en http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Servidor en ejecución en http://localhost:${PORT}`);
 });

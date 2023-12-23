@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
@@ -112,9 +112,8 @@ app.get('/get-generos', async (req, res) => {
 // Ruta para obtener la información del usuario a partir del token
 app.get('/get-user-info', verifyToken, async (req, res) => {
   try {
-    const userId = req.user.username; // Supongo que el nombre de usuario se usa como identificador único en este caso
+    const userId = req.user.username;
 
-    // Consulta para obtener la información del usuario
     const userInfoQuery = 'SELECT * FROM usuarios WHERE username = ?';
     const userInfoResults = await queryAsync(userInfoQuery, [userId]);
 
@@ -123,7 +122,7 @@ app.get('/get-user-info', verifyToken, async (req, res) => {
     }
 
     const userInfo = userInfoResults[0];
-    // Puedes excluir la contraseña u otros datos sensibles antes de enviar la respuesta
+    // Excluir la contraseña
     delete userInfo.password;
 
     res.status(200).json(userInfo);

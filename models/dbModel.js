@@ -9,12 +9,6 @@ async function queryAsync(sql, values) {
   });
 }
 
-
-async function getGeneros() {
-    const results = await queryAsync('SELECT * FROM genero');
-    return results;
-  }
-
 module.exports = {
-  getGeneros
+  queryAsync
 };
