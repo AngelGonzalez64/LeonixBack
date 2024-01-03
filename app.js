@@ -1,8 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+
 const authController = require('./controllers/authController');
 const userController = require('./controllers/userController');
+const cvController = require('./controllers/cvController');
 
 const app = express();
 const PORT = 5000;
@@ -21,6 +23,10 @@ app.get('/get-generos', userController.getGeneros);
 app.get('/get-user-info', authController.verifyToken, userController.getUserInfo);
 app.post('/upload-image', authController.verifyToken, userController.uploadImage);
 app.get('/get-user-image', authController.verifyToken, userController.getUserImage);
+
+// CV
+app.post('/upload-cv', authController.verifyToken, cvController.uploadCVData);
+app.get('/get-cv-data', authController.verifyToken, cvController.getAllCVData);
 
 // Inicia el servidor
 app.listen(PORT, () => {
