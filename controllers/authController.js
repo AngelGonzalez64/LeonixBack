@@ -22,10 +22,13 @@ function verifyToken(req, res, next) {
       return res.status(401).json({ error: 'Token no válido' });
     }
 
+    console.log('Decoded user:', decoded.user);
+
     req.user = decoded.user;
     next();
   });
 }
+
 
 // Ruta para iniciar sesión
 async function login(req, res) {
@@ -37,9 +40,9 @@ async function login(req, res) {
     return res.status(401).json({ error: 'Credenciales incorrectas' });
   }
 
-  const user = { username: results[0].username };
-
+  const user = { id: results[0].id, username: results[0].username };
   const token = jwt.sign({ user }, JWT_SECRET_KEY, { expiresIn: '1h' });
+  
   console.log('Generated Token:', token);
   res.status(200).json({ token });
 }
@@ -70,5 +73,5 @@ async function signup(req, res) {
 module.exports = {
   verifyToken,
   login,
-  signup
+  signup,
 };

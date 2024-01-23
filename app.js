@@ -25,8 +25,9 @@ app.post('/upload-image', authController.verifyToken, userController.uploadImage
 app.get('/get-user-image', authController.verifyToken, userController.getUserImage);
 
 // CV
-app.post('/upload-cv', authController.verifyToken, cvController.uploadCVData);
-app.get('/get-cv-data', authController.verifyToken, cvController.getAllCVData);
+app.post('/postCV', authController.verifyToken, cvController.addCV);
+app.put('/updateCV', authController.verifyToken, cvController.updateCV);
+app.get('/getCV', authController.verifyToken, cvController.getAllCVData);
 
 // Inicia el servidor
 app.listen(PORT, () => {
