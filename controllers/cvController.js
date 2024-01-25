@@ -61,20 +61,36 @@ async function updateCV(req, res) {
   }
 }
 
-async function getAllCVData(req, res) {
-  const results = await queryAsync('SELECT * FROM cv');
+// Ruta para obtener toda la información de la tabla CV
+async function getDataCV(req, res) {
+  const { username } = req.user;
 
-  if (results.length > 0) {
-    console.log('CV data retrieved successfully');
-    res.status(200).json(results);
-  } else {
-    console.error('No CV data found');
-    res.status(404).json({ message: 'No CV data found' });
+  console.log('Username:', username);
+
+  // Busca el usuario en la base de datos para obtener el usuario_id
+  const userQuery = await queryAsync('SELECT id FROM usuarios WHERE username = ?', [username]);
+
+  if (userQuery.length === 0) {
+    return res.status(404).json({ error: 'Usuario no encontrado' });
   }
+
+  const usuario_id = userQuery[0].id;
+
+  // Obtén toda la información del CV para el usuario dado
+  const cvQuery = await queryAsync('SELECT * FROM cv WHERE usuario_id = ?', [usuario_id]);
+
+  if (cvQuery.length === 0) {
+    return res.status(404).json({ error: 'CV no encontrado para este usuario' });
+  }
+
+  const cvData = cvQuery[0];
+
+  console.log('Información del CV obtenida con éxito');
+  res.status(200).json({ cvData });
 }
 
 module.exports = {
   addCV,
   updateCV,
-  getAllCVData,
+  getDataCV,
 };
