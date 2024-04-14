@@ -29,6 +29,8 @@ app.post('/postCV', authController.verifyToken, cvController.addCV);
 app.put('/updateCV', authController.verifyToken, cvController.updateCV);
 app.get('/getCV', authController.verifyToken, cvController.getDataCV);
 
+// CV Files
+
 // Inicia el servidor
 app.listen(PORT, () => {
   console.log(`Servidor en ejecución en http://localhost:${PORT}`);
